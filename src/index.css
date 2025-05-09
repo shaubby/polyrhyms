@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+@theme {
+    --color-olive: #37392E;
+    --color-blue0: #284F56;
+    --color-blue1: #19647E;
+    --color-blue2: #218A97;
+    --color-blue3: #28AFB0;
+    --color-blue4: #83BFBF;
+    --color-lightgray: #191919;
+    --color-lightwhite: #383838;
+  }
+
+  ::-webkit-slider-thumb, ::-moz-range-thumb, ::-ms-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: --color-white;
+  }
