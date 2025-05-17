@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Beat from './Beat';
 import Button from './Button';
+import Visualizer from './Visualizer';
 function Row() {
 
     const [buttons1, setButtons1] = useState([0, 0, 0, 0]);
@@ -52,8 +53,11 @@ function Row() {
     // }
     return (
         <div className='w-1/2 p-14 bg-white border-3 border-lightgray mt-10 rounded-3xl'>
+            
+            <Visualizer beat1={buttons1} beat2={buttons2}/>
+
         <div className={"p-2 bg-white border-black border-3 flex flex-row rounded-3xl"}>
-            <div className='flex-auto overflow-x-scroll'>
+            <div className='flex-auto'>
                 <div className={"flex m-4"} >
                     {buttons1.map((button, index) => ( <Beat key={index} number={index+1} click={() => handleClick1(index)} type={buttons1[index]}/>))}
                 </div>
@@ -72,9 +76,9 @@ function Row() {
         </div>
         <div className={"mt-6 p-4 bg-black border-black border-3 flex flex-row rounded-3xl"}>
             <div className='font-mono justify-center content-center flex-auto'>
-                <p className={"text-white edit-profile"}>BPM + {bpm}<input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 text-black bg-white rounded-full w-20'></input></p>
+                <p className={"text-white edit-profile"}>BPM + <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 text-black bg-white rounded-full w-20'></input></p>
                 
-                <input type="range"   min="0" max="300" value={bpm} onMouseUp={handleBpm} className='appearance-none bg-white rounded-full h-1 w-full'></input>
+                <input type="range" defaultValue={bpm} min="0" max="300" onChange={handleBpm} className='appearance-none bg-white rounded-full h-1 w-full'></input>
             </div>
         </div>
         </div>
