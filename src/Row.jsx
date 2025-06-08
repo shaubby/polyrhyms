@@ -1,4 +1,4 @@
-import { useState ,useEffect } from 'react'
+import { useState ,useEffect, useRef } from 'react'
 import Beat from './Beat';
 import Button from './Button';
 import Visualizer from './Visualizer';
@@ -17,10 +17,29 @@ function Row() {
             console.log(task.id + ' task has run ' + task.currentRuns + ' times.');
         }
     };
-    var timer = new TaskTimer(10);
-    timer.add(task1).start();
-    
-    
+    const [currentTime, setCurrentTime] = useState(0);
+    const audioContextRef = useRef(null);
+
+    useEffect(() => {
+        // Initialize AudioContext when the component mounts
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        const audioContext = audioContextRef.current;
+
+        // Function to update the clock
+        const updateTime = () => {
+        setCurrentTime(audioContext.currentTime);
+        requestAnimationFrame(updateTime); // Schedule the next update
+        };
+
+        // Start updating the clock
+        updateTime();
+
+        // Clean up when the component unmounts
+        return () => {
+        audioContext.close();
+        };
+    }, []);
+        
     const handleClick1 = (index) => {
         let newButtons = buttons1.map(x =>x);
         newButtons[index] += 1;
@@ -68,7 +87,7 @@ function Row() {
     return (
         <div className='w-1/2 p-14 bg-white border-3 border-lightgray mt-10 rounded-3xl'>
             
-            <Visualizer beat1={buttons1} beat2={buttons2}/>
+            <Visualizer key={333} beat1={buttons1} beat2={buttons2}/>
 
         <div className={"p-2 bg-white border-black border-3 flex flex-row rounded-3xl"}>
             <div className='flex-auto'>
@@ -81,10 +100,10 @@ function Row() {
             </div>
             <div className='flex-none mr-4 ml-4 mb-2'>
                 <div className={"flex flex-col"}>
-                    <Button icon='+' click={() => handleBeat(1)}/>
-                    <Button icon='-' click={() => handleBeat(-1)}/>
-                    <Button icon='+' click={() => handleBeat(2)}/>
-                    <Button icon='-' click={() => handleBeat(-2)}/>
+                    <Button key= {23} icon='+' click={() => handleBeat(1)}/>
+                    <Button key= {24} icon='-' click={() => handleBeat(-1)}/>
+                    <Button key= {25}  icon='+' click={() => handleBeat(2)}/>
+                    <Button key= {26} icon='-' click={() => handleBeat(-2)}/>
                 </div>
             </div>
         </div>
