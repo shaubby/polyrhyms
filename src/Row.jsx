@@ -2,23 +2,13 @@ import { useState ,useEffect } from 'react'
 import Beat from './Beat';
 import Button from './Button';
 import Visualizer from './Visualizer';
-import { TaskTimer } from 'tasktimer';
 function Row() {
 
     const [buttons1, setButtons1] = useState([0, 0, 0, 0]);
     const [buttons2, setButtons2] = useState([0, 0, 0, 0]);
     const [bpm, setBpm] = useState(120);
     const [time, setTime] = useState(0.0);
-    const task1 = {
-        id: 'heartbeat',
-        tickDelay: 0,   // ticks (to wait before first run)
-        tickInterval: 50, // ticks (interval)
-        callback(task) { // can also be an async function, returning a promise
-            console.log(task.id + ' task has run ' + task.currentRuns + ' times.');
-        }
-    };
-    var timer = new TaskTimer(10);
-    timer.add(task1).start();
+    
     
     
     const handleClick1 = (index) => {
