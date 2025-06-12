@@ -2,47 +2,109 @@ import { useState ,useEffect, useRef } from 'react'
 import Beat from './Beat';
 import Button from './Button';
 import Visualizer from './Visualizer';
+import Play from './Play'
+
 let audioContext = new AudioContext();
 let out = audioContext.destination;
 
 
-
-function Row() {
+function Row(props) {
 
     const [buttons1, setButtons1] = useState([0, 0, 0, 0]);
+    const [accent1, setAccent1] = useState([1, 0, 0, 0]);
+    const [accent2, setAccent2] = useState([1   , 0, 0, 0]);
     const [buttons2, setButtons2] = useState([0, 0, 0, 0]);
     const [bpm, setBpm] = useState(120);
     let nextNote = 1;
-    const [delay, setDelay] = useState(1);
-    const [refreshRate, setRefreshRate] = useState(10);
-
+    const [delay, setDelay] = useState(60/bpm);
+    const [delay2, setDelay2] = useState(60/bpm);
+    const [refreshRate, setRefreshRate] = useState(2);
+    const [metInterval, setMetInterval] = useState(0);
+    let index1 = 0;
     let metronome = () => {
         if(audioContext.currentTime > nextNote) {
             nextNote = nextNote+delay;
-            const osc = audioContext.createOscillator();
-            const envelope = audioContext.createGain();
             
-            osc.frequency.value = 800;
-            envelope.gain.value = 1;
-            envelope.gain.exponentialRampToValueAtTime(1, audioContext.currentTime + 0.001);
-            envelope.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.02);
-    
-            osc.connect(envelope);
-            envelope.connect(out);
-        
-            osc.start(audioContext.currentTime);
-            osc.stop(audioContext.currentTime + 0.03);
-            console.log("resume");
+            if(buttons1[index1] != 1) {
+                //console.log(bpm);   
+                const osc = audioContext.createOscillator();
+                const envelope = audioContext.createGain();
+                if(accent1[index1] == 1) osc.frequency.value=1800;
+                else osc.frequency.value = 1600;
+                envelope.gain.value = 1;
+                envelope.gain.exponentialRampToValueAtTime(1, audioContext.currentTime + 0.001);
+                envelope.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05  );
+
+                
+                osc.connect(envelope);
+                envelope.connect(out);
+            
+                osc.start(audioContext.currentTime);
+                osc.stop(audioContext.currentTime + 0.03);
+                //console.log("resume");
+            }
+            index1+=1;
+            if(index1 >= buttons1.length) index1=0;
         }
         //console.log(audioContext.currentTime);
     }
 
-    this.interval = setInterval(metronome, refreshRate);
-    console.log("resume1");
-    //ComponentDidMount
-    useEffect(() => {
-        setDelay(60.0/bpm);
-    }, []);
+    let index2 = 0;
+    let nextNote2 = 1;
+    let metronome2 = () => {
+        if(audioContext.currentTime > nextNote2) {
+            nextNote2 = nextNote2+delay2;
+            
+            if(buttons2[index2] != 1) {
+                //console.log(bpm);   
+                const osc = audioContext.createOscillator();
+                const envelope = audioContext.createGain();
+                
+                if(accent2[index2] == 1) osc.frequency.value=1000;
+                else osc.frequency.value = 800;
+                envelope.gain.value = 1;
+                envelope.gain.exponentialRampToValueAtTime(1, audioContext.currentTime + 0.001);
+                envelope.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.01    );
+
+
+                osc.connect(envelope);
+                envelope.connect(out);
+            
+                osc.start(audioContext.currentTime);
+                osc.stop(audioContext.currentTime + 0.05);
+                //console.log("resume");
+            }
+            index2+=1;
+            if(index2 >= buttons2.length) index2=0;
+        }
+        //console.log(audioContext.currentTime);
+    }
+    
+    useEffect(() => { 
+
+        audioContext.resume();
+
+        let interval = setInterval(metronome, refreshRate);
+        let interval2 = setInterval(metronome2, refreshRate);
+
+        setDelay(prevDelay => (60.0/bpm)/buttons1.length);
+        setDelay2(prevDelay => (60.0/bpm)/buttons2.length);
+        return () => {
+            audioContext.close();
+            audioContext = new AudioContext();
+            out = audioContext.destination;
+
+            //clearTimeout(timeout);
+
+            clearInterval(interval);
+            clearInterval(interval2);
+
+        }
+    }, [bpm, delay, buttons1, accent1,buttons2, accent2, delay2]);
+  
+
+    
+    
     
     
     
@@ -53,7 +115,6 @@ function Row() {
             newButtons[index] = 0;
         }
         setButtons1(newButtons);
-
     }
     const handleClick2 = (index) => {
         let newButtons = buttons2.map(x =>x);
@@ -63,6 +124,26 @@ function Row() {
         }
         setButtons2(newButtons);
     }
+
+    const handleAccent1 = (event,index) => {
+        let newAccents = accent1.map(x =>x);
+        newAccents[index] += 1;
+        if(newAccents[index] > 1){
+            newAccents[index] = 0;
+        }
+        setAccent1(newAccents); 
+        event.stopPropagation() 
+    }
+    const handleAccent2 = (event,index) => {
+        let newAccents = accent2.map(x =>x);
+        newAccents[index] += 1;
+        if(newAccents[index] > 1){
+            newAccents[index] = 0;
+        }
+        setAccent2(newAccents);
+        event.stopPropagation()
+    }
+
     const handleBeat = (value) => {
         if(value==2) {
             let newButtons = buttons2.map(x =>x);
@@ -81,33 +162,29 @@ function Row() {
             newButtons.pop(newButtons.length-1);
             setButtons1(newButtons);
         }
+        setDelay(60.0/bpm/buttons1.length);
+        setDelay2((60.0/bpm)/buttons2.length);
     }
     const handleBpm = (event) => {
-        setBpm(event.target.value);
-        setDelay(60.0/bpm);
-        audioContext.resume();
-        console.log("resume");
+        setBpm(prevBpm => event.target.value);
+        setDelay(prevDelay => (60.0/bpm)/buttons1.length);
+        setDelay2(prevDelay => (60.0/bpm)/buttons2.length);
     }
     
-    // Component did mount
-    useEffect(() => {
-        
-       
-                
-    }, []);
+
 
     return (
-        <div className='w-1/2 p-14 bg-white border-3 border-lightgray mt-10 rounded-3xl'>
+        <div className='w-3/4 p-14 bg-white border-3 border-lightgray mt-10 rounded-3xl'>
             
-            <Visualizer key={333} beat1={buttons1} beat2={buttons2}/>
+            <Visualizer context={audioContext} key={333} beat1={buttons1} beat2={buttons2}/>
 
         <div className={"p-2 bg-white border-black border-3 flex flex-row rounded-3xl"}>
             <div className='flex-auto'>
                 <div className={"flex m-4"} >
-                    {buttons1.map((button, index) => ( <Beat key={index} number={index+1} click={() => handleClick1(index)} type={buttons1[index]}/>))}
+                    {buttons1.map((button, index) => ( <Beat accentClick = {(event) => handleAccent1(event,index)} key={index} number={index+1} click={() => handleClick1(index)} accent={accent1[index]} type={buttons1[index]}/>))}
                 </div>
                 <div className={"flex m-4"}>
-                    {buttons2.map((button, index) => ( <Beat number={index+1} click={() => handleClick2(index)} type={buttons2[index]} key={index}/>))}
+                    {buttons2.map((button, index) => ( <Beat accentClick = {(event) => handleAccent2(event,index)} number={index+1} click={() => handleClick2(index)} accent={accent2[index]} type={buttons2[index]} key={index}/>))}
                 </div>
             </div>
             <div className='flex-none mr-4 ml-4 mb-2'>
@@ -126,6 +203,7 @@ function Row() {
                 <input type="range" defaultValue={bpm} min="0" max="300" onChange={handleBpm} className='appearance-none bg-white rounded-full h-1 w-full'></input>
             </div>
         </div>
+        <Play click = {() => audioContext.resume()}/>
         </div>
 
     )
