@@ -1,8 +1,11 @@
-import { useState ,useEffect, useRef } from 'react'
+import { useState ,useEffect, useRef, createContext } from 'react'
 import Beat from './Beat';
 import Button from './Button';
 import Visualizer from './Visualizer';
 import Play from './Play'
+import TimeContext from './TimeContext'
+import ReactAudioContext from './AudioContext';
+import DelayContext from './DelayContext';
 
 let audioContext = new AudioContext();
 let out = audioContext.destination;
@@ -15,15 +18,22 @@ function Row(props) {
     const [accent2, setAccent2] = useState([1   , 0, 0, 0]);
     const [buttons2, setButtons2] = useState([0, 0, 0, 0]);
     const [bpm, setBpm] = useState(120);
-    let nextNote = 1;
+    
     const [delay, setDelay] = useState(60/bpm);
     const [delay2, setDelay2] = useState(60/bpm);
-    const [refreshRate, setRefreshRate] = useState(2);
+    const [refreshRate, setRefreshRate] = useState(1);
     const [metInterval, setMetInterval] = useState(0);
+    const [time, setTime] = useState(0);
+    const [contextDelay, setContextDelay] = useState(0);
+    let nextNote = 0.5;
     let index1 = 0;
+    let index2 = 0;
+    let nextNote2 =0.5;
     let metronome = () => {
+
         if(audioContext.currentTime > nextNote) {
             nextNote = nextNote+delay;
+            if(contextDelay==0){setContextDelay(audioContext.currentTime)};
             
             if(buttons1[index1] != 1) {
                 //console.log(bpm);   
@@ -46,12 +56,6 @@ function Row(props) {
             index1+=1;
             if(index1 >= buttons1.length) index1=0;
         }
-        //console.log(audioContext.currentTime);
-    }
-
-    let index2 = 0;
-    let nextNote2 = 1;
-    let metronome2 = () => {
         if(audioContext.currentTime > nextNote2) {
             nextNote2 = nextNote2+delay2;
             
@@ -78,6 +82,13 @@ function Row(props) {
             if(index2 >= buttons2.length) index2=0;
         }
         //console.log(audioContext.currentTime);
+        //console.log(audioContext.currentTime);
+        setTime(prevTime => audioContext.currentTime);
+    }
+
+    
+    let metronome2 = () => {
+        
     }
     
     useEffect(() => { 
@@ -174,11 +185,20 @@ function Row(props) {
 
 
     return (
-        <div className='w-3/4 p-14 bg-white border-3 border-lightgray mt-10 rounded-3xl'>
-            
-            <Visualizer context={audioContext} key={333} beat1={buttons1} beat2={buttons2}/>
-
-        <div className={"p-2 bg-white border-black border-3 flex flex-row rounded-3xl"}>
+        <div  className=' w-3/4 p-14 bg-white border-3 border-lightgray mt-10 rounded-3xl'>
+            <div className='flex'>
+                <div className='flex-1 mr-5'>
+                <ReactAudioContext value={audioContext}>
+                <TimeContext.Provider value = {delay*buttons1.length}>
+                <Visualizer context={audioContext} key={333} beat1={buttons1} beat2={buttons2}/>
+                </TimeContext.Provider>
+                </ReactAudioContext>
+                </div>
+                <div className='flex-1 ml-5'>
+                <Play click = {() => audioContext.resume()}/>
+                </div>
+            </div>
+        <div className={"p-2 mt-6 bg-white border-black border-3 flex flex-row rounded-3xl"}>
             <div className='flex-auto'>
                 <div className={"flex m-4"} >
                     {buttons1.map((button, index) => ( <Beat accentClick = {(event) => handleAccent1(event,index)} key={index} number={index+1} click={() => handleClick1(index)} accent={accent1[index]} type={buttons1[index]}/>))}
@@ -203,10 +223,11 @@ function Row(props) {
                 <input type="range" defaultValue={bpm} min="0" max="300" onChange={handleBpm} className='appearance-none bg-white rounded-full h-1 w-full'></input>
             </div>
         </div>
-        <Play click = {() => audioContext.resume()}/>
+        
         </div>
 
     )
 }
 
 export default Row
+

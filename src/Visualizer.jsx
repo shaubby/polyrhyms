@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import Beat from './Beat';
 import Button from './Button';
 import Indicator from './Indicator';
 function Row(props) {
 
     
+    
     return (
-        <div className='p-6 mb-6 bg-black rounded-3xl'>
+        <div className='p-6 bg-black rounded-2xl'>
             
             <div className=' relative'>
             <Indicator context={props.context}/>
