@@ -14,10 +14,10 @@ import './range.css';
 
 function Row(props) {
 
-    const [buttons1, setButtons1] = useState([0, 0, 0]);
-    const [accent1, setAccent1] = useState([0, 0, 0]);
-    const [accent2, setAccent2] = useState([1, 0, 0, 0]);
-    const [buttons2, setButtons2] = useState([0, 0, 0, 0]);
+    const [buttons1, setButtons1] = useState([0, 1, 0, 0]);
+    const [accent1, setAccent1] = useState([1, 0, 0, 0]);
+    const [accent2, setAccent2] = useState([1, 0, 0]);
+    const [buttons2, setButtons2] = useState([0, 0, 0]);
     const [bpm, setBpm] = useState(40);
     
     
