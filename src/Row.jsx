@@ -13,11 +13,12 @@ let out = audioContext.destination;
 
 function Row(props) {
 
-    const [buttons1, setButtons1] = useState([0, 0, 0, 0]);
-    const [accent1, setAccent1] = useState([1, 0, 0, 0]);
-    const [accent2, setAccent2] = useState([1   , 0, 0, 0]);
+    const [buttons1, setButtons1] = useState([0, 0, 0]);
+    const [accent1, setAccent1] = useState([0, 0, 0]);
+    const [accent2, setAccent2] = useState([1, 0, 0, 0]);
     const [buttons2, setButtons2] = useState([0, 0, 0, 0]);
-    const [bpm, setBpm] = useState(120);
+    const [bpm, setBpm] = useState(40);
+    
     
     const [delay, setDelay] = useState(60/bpm);
     const [delay2, setDelay2] = useState(60/bpm);
@@ -51,7 +52,7 @@ function Row(props) {
             
                 osc.start(audioContext.currentTime);
                 osc.stop(audioContext.currentTime + 0.03);
-                //console.log("resume");
+
             }
             index1+=1;
             if(index1 >= buttons1.length) index1=0;
@@ -76,7 +77,7 @@ function Row(props) {
             
                 osc.start(audioContext.currentTime);
                 osc.stop(audioContext.currentTime + 0.05);
-                //console.log("resume");
+
             }
             index2+=1;
             if(index2 >= buttons2.length) index2=0;
@@ -93,7 +94,7 @@ function Row(props) {
     
     useEffect(() => { 
 
-        audioContext.resume();
+        audioContext.suspend();
 
         let interval = setInterval(metronome, refreshRate);
         let interval2 = setInterval(metronome2, refreshRate);
@@ -158,20 +159,32 @@ function Row(props) {
     const handleBeat = (value) => {
         if(value==2) {
             let newButtons = buttons2.map(x =>x);
+            let newAccents = accent2.map(x =>x);
             newButtons.push(0);
+            newAccents.push(0)
             setButtons2(newButtons);
+            setAccent2(newAccents);
         } else if(value==1) {
             let newButtons = buttons1.map(x =>x);
+            let newAccents = accent1.map(x =>x);
             newButtons.push(0);
+            newAccents.push(0)
             setButtons1(newButtons);
+            setAccent1(newAccents);
         } else if(value==-2) {
             let newButtons = buttons2.map(x =>x);
+            let newAccents = accent2.map(x =>x);
             newButtons.pop(newButtons.length-1);
+            newAccents.pop(newButtons.length-1);
             setButtons2(newButtons);
+            setAccent2(newAccents);
         } else if(value==-1) {
             let newButtons = buttons1.map(x =>x);
+            let newAccents = accent1.map(x =>x);
             newButtons.pop(newButtons.length-1);
+            newAccents.pop(newButtons.length-1);
             setButtons1(newButtons);
+            setAccent1(newAccents);
         }
         setDelay(60.0/bpm/buttons1.length);
         setDelay2((60.0/bpm)/buttons2.length);
@@ -181,24 +194,27 @@ function Row(props) {
         setDelay(prevDelay => (60.0/bpm)/buttons1.length);
         setDelay2(prevDelay => (60.0/bpm)/buttons2.length);
     }
+    const handleBpm2 = (event) => {
+        setBpm(prevBpm => event.target.value/buttons1.length);
+        setDelay(prevDelay => (60.0/bpm)/buttons1.length);
+        setDelay2(prevDelay => (60.0/bpm)/buttons2.length);
+    }
     
 
 
     return (
-        <div  className=' w-3/4 p-14 bg-white border-3 border-lightgray mt-10 rounded-3xl'>
+        <div  className=' w-3/4 p-14 bg-white border-3 border-lightgray my-10 rounded-3xl'>
             <div className='flex'>
-                <div className='flex-1 mr-5'>
+                <div className='flex-1 mr-4 '>
                 <ReactAudioContext value={audioContext}>
                 <TimeContext.Provider value = {delay*buttons1.length}>
                 <Visualizer context={audioContext} key={333} beat1={buttons1} beat2={buttons2}/>
                 </TimeContext.Provider>
                 </ReactAudioContext>
                 </div>
-                <div className='flex-1 ml-5'>
-                <Play click = {() => audioContext.resume()}/>
-                </div>
+                <div className='flex-1 ml-4 border-black border-3 bg-white rounded-3xl'></div>
             </div>
-        <div className={"p-2 mt-6 bg-white border-black border-3 flex flex-row rounded-3xl"}>
+        <div className={"p-2 my-6 bg-white border-black border-3 flex flex-row rounded-3xl"}>
             <div className='flex-auto'>
                 <div className={"flex m-4"} >
                     {buttons1.map((button, index) => ( <Beat accentClick = {(event) => handleAccent1(event,index)} key={index} number={index+1} click={() => handleClick1(index)} accent={accent1[index]} type={buttons1[index]}/>))}
@@ -216,14 +232,24 @@ function Row(props) {
                 </div>
             </div>
         </div>
-        <div className={"mt-6 p-4 bg-black border-black border-3 flex flex-row rounded-3xl"}>
-            <div className='font-mono justify-center content-center flex-auto'>
-                <p className={"text-white edit-profile"}>BPM + <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 text-black bg-white rounded-full w-20'></input></p>
+        <div className='flex'>
+        <div className={"p-4 bg-black border-black border-3 rounded-2xl flex-1 w-10 mr-4 grow-4 "}>
+            <div className='font-mono flex-2'>
+                <p className={"text-white edit-profile text-sm"}> BPM (per bar) : <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 text-black bg-white rounded-full w-20 mr-6      '></input>
+                BPM (per red beat) : <input type="number" value={bpm*buttons1.length} onChange={handleBpm2} className='text-center p-2 text-black bg-white rounded-full w-20'></input></p>
                 
                 <input type="range" defaultValue={bpm} min="0" max="300" onChange={handleBpm} className='appearance-none bg-white rounded-full h-1 w-full'></input>
             </div>
         </div>
-        
+        <div className='flex-1 ml-4 grow-2'>
+            <Play value= {audioContext.state} click = {() => {
+                if(audioContext.state =='suspended') {
+                    audioContext.resume();
+                } else {
+                    audioContext.suspend();
+                }}}/>
+            </div>
+        </div>
         </div>
 
     )
