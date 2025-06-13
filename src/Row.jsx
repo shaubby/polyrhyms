@@ -205,12 +205,13 @@ function Row(props) {
 
 
     return (
-        <div  className=' w-3/4 p-10 bg-white border-3 border-lightgray my-5 rounded-3xl'>
-            <div className='flex'>
-                <div className='flex-1 mr-4 border-black border-3 bg-white rounded-3xl flex items-center justify-center'>
-                    <p className='text-md text-black font-mono '><span className='text-3xl font-bold'>polyrhyms</span><br/>a polyrhythm builder/visualizer</p>
+        <div className='min-h-full min-w-full flex items-center justify-center'>
+        <div  className='w-12/13 sm:w-12/13 lg:w-4/5 xl:w-3/4 p-2 text-center sm:text-left sm:p-10 bg-white border-3 border-lightgray my-5 rounded-3xl flex flex-col gap-4'>
+            <div className='flex flex-col sm:flex-row gap-2 sm:gap-4'>
+            <div className='flex-1 sm:p-2 sm:border-black sm:border-3 bg-white rounded-3xl flex items-center justify-center'>
+                    <p className='text-xs sm:text-md text-black font-mono '><span className='text-xl sm:text-3xl font-bold'>polyrhyms</span><br/>a polyrhythm builder/visualizer</p>
                     </div>
-                <div className='flex-1 ml-4 '>
+                <div className='flex-1 '>
                 <ReactAudioContext value={audioContext}>
                 <TimeContext.Provider value = {delay*buttons1.length}>
                 <Visualizer context={audioContext} key={333} beat1={buttons1} beat2={buttons2}/>
@@ -218,16 +219,16 @@ function Row(props) {
                 </ReactAudioContext>
                 </div>
             </div>
-        <div className={"p-2 my-6 bg-white border-black border-3 flex flex-row rounded-3xl"}>
-            <div className='flex-auto'>
-                <div className={"flex m-4"} >
+        <div className={" bg-white border-black border-3 flex flex-row rounded-3xl"}>
+            <div className='flex-auto flex flex-col justify-center gap-2 sm:gap-4'>
+                <div className={"flex mx-2 sm:mx-4 gap-1 sm:gap-2"} >
                     {buttons1.map((button, index) => ( <Beat accentClick = {(event) => handleAccent1(event,index)} key={index} number={index+1} click={() => handleClick1(index)} accent={accent1[index]} type={buttons1[index]}/>))}
                 </div>
-                <div className={"flex m-4"}>
+                <div className={"flex mx-2 sm:mx-4 gap-1 sm:gap-2"}>
                     {buttons2.map((button, index) => ( <Beat accentClick = {(event) => handleAccent2(event,index)} number={index+1} click={() => handleClick2(index)} accent={accent2[index]} type={buttons2[index]} key={index}/>))}
                 </div>
             </div>
-            <div className='flex-none mr-4 ml-4 mb-2'>
+            <div className='flex-none mr-2  sm:mr-4 sm:ml-4 mb-2'>
                 <div className={"flex flex-col"}>
                     <Button key= {23} icon='+' click={() => handleBeat(1)}/>
                     <Button key= {24} icon='-' click={() => handleBeat(-1)}/>
@@ -236,18 +237,18 @@ function Row(props) {
                 </div>
             </div>
         </div>
-        <div className='flex'>
-        <div className={"p-4 bg-black border-black border-3 rounded-2xl flex-1 w-10 mr-4 grow-4 "}>
+        <div className='flex gap-4'>
+        <div className={"p-4 bg-black border-black border-3 rounded-2xl flex-1 w-10 grow-4 "}>
             <div className='font-mono flex-2 relative'>
-                <p className={"text-white edit-profile text-sm"}> BPM (per bar) : <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 mb-2 text-black bg-white rounded-full h-8 w-20 mr-6'></input><br></br>
-                BPM (per red beat) : <input type="number" value={bpm*buttons1.length} onChange={handleBpm2} className='text-center h-8 p-2 text-black bg-white rounded-full w-20'></input></p>
+                <p className={"text-white edit-profile text-xs sm:text-sm"}> BPM per bar: <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 mb-2 text-black bg-white rounded-full h-8 w-20'></input><br></br>
+                BPM per beat: <input type="number" value={bpm*buttons1.length} onChange={handleBpm2} className='text-center h-8 p-2 text-black bg-white rounded-full w-20'></input></p>
                 <div></div>
                 
                 <input type="range" defaultValue={bpm} min="0" max="300" onChange={handleBpm} className='h-1 w-full'></input>
 
             </div>
         </div>
-        <div className='flex-1 ml-4 grow-2'>
+        <div className='flex-1 grow-2'>
             <Play value={state} click = {() => {
                 if(audioContext.state =='suspended') {
                     audioContext.resume();
@@ -257,7 +258,7 @@ function Row(props) {
             </div>
         </div>
         </div>
-
+        </div>
     )
 }
 
