@@ -10,6 +10,7 @@ import DelayContext from './DelayContext';
 let audioContext = new AudioContext();
 let out = audioContext.destination;
 
+import './range.css';
 
 function Row(props) {
 
@@ -26,12 +27,13 @@ function Row(props) {
     const [metInterval, setMetInterval] = useState(0);
     const [time, setTime] = useState(0);
     const [contextDelay, setContextDelay] = useState(0);
+    const [state, setState] = useState('running');
     let nextNote = 0.5;
     let index1 = 0;
     let index2 = 0;
     let nextNote2 =0.5;
     let metronome = () => {
-
+        setState(prevstate => audioContext.state);
         if(audioContext.currentTime > nextNote) {
             nextNote = nextNote+delay;
             if(contextDelay==0){setContextDelay(audioContext.currentTime)};
@@ -203,16 +205,18 @@ function Row(props) {
 
 
     return (
-        <div  className=' w-3/4 p-14 bg-white border-3 border-lightgray my-10 rounded-3xl'>
+        <div  className=' w-3/4 p-10 bg-white border-3 border-lightgray my-5 rounded-3xl'>
             <div className='flex'>
-                <div className='flex-1 mr-4 '>
+                <div className='flex-1 mr-4 border-black border-3 bg-white rounded-3xl flex items-center justify-center'>
+                    <p className='text-md text-black font-mono '><span className='text-3xl font-bold'>polyrhyms</span><br/>a polyrhythm builder/visualizer</p>
+                    </div>
+                <div className='flex-1 ml-4 '>
                 <ReactAudioContext value={audioContext}>
                 <TimeContext.Provider value = {delay*buttons1.length}>
                 <Visualizer context={audioContext} key={333} beat1={buttons1} beat2={buttons2}/>
                 </TimeContext.Provider>
                 </ReactAudioContext>
                 </div>
-                <div className='flex-1 ml-4 border-black border-3 bg-white rounded-3xl'></div>
             </div>
         <div className={"p-2 my-6 bg-white border-black border-3 flex flex-row rounded-3xl"}>
             <div className='flex-auto'>
@@ -234,15 +238,17 @@ function Row(props) {
         </div>
         <div className='flex'>
         <div className={"p-4 bg-black border-black border-3 rounded-2xl flex-1 w-10 mr-4 grow-4 "}>
-            <div className='font-mono flex-2'>
-                <p className={"text-white edit-profile text-sm"}> BPM (per bar) : <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 text-black bg-white rounded-full w-20 mr-6      '></input>
-                BPM (per red beat) : <input type="number" value={bpm*buttons1.length} onChange={handleBpm2} className='text-center p-2 text-black bg-white rounded-full w-20'></input></p>
+            <div className='font-mono flex-2 relative'>
+                <p className={"text-white edit-profile text-sm"}> BPM (per bar) : <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 mb-2 text-black bg-white rounded-full h-8 w-20 mr-6'></input><br></br>
+                BPM (per red beat) : <input type="number" value={bpm*buttons1.length} onChange={handleBpm2} className='text-center h-8 p-2 text-black bg-white rounded-full w-20'></input></p>
+                <div></div>
                 
-                <input type="range" defaultValue={bpm} min="0" max="300" onChange={handleBpm} className='appearance-none bg-white rounded-full h-1 w-full'></input>
+                <input type="range" defaultValue={bpm} min="0" max="300" onChange={handleBpm} className='h-1 w-full'></input>
+
             </div>
         </div>
         <div className='flex-1 ml-4 grow-2'>
-            <Play value= {audioContext.state} click = {() => {
+            <Play value={state} click = {() => {
                 if(audioContext.state =='suspended') {
                     audioContext.resume();
                 } else {
