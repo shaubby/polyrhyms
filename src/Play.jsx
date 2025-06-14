@@ -12,7 +12,7 @@ function Play(props) {
     return (
 
         <div onMouseDown={props.click} className={styles + " flex items-center justify-center h-full border-3 border-black rounded-2xl " + (props.value!='running' ? "bg-black" : "bg-white")}>
-            <p className={'select-none text-2xl ' + (props.value!='running' ? "text-white" : "text-bold text-black")}>{props.value!='running' ? "▶" : "| |"}</p>
+            <p className={'select-none text-2xl ' + (props.value!='running' ? "text-white" : "text-bold text-black")}>{props.value!='running' ? "▶︎" : "▐▐"}</p>
         </div>
 
 

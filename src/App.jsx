@@ -3,6 +3,7 @@ import Beat from './Beat';
 import Row from './Row';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import Popup from './Popup';
 
 
 // https://coolors.co/37392e-19647e-28afb0-ddcecd-eee5e5
@@ -15,9 +16,9 @@ function App() {
 
   return (
     <div className="bg-black h-full w-full flex flex-col items-center">
-      
+        
         <Row/>
-      
+        <Popup/>
       {/* <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p> */}
