@@ -240,8 +240,8 @@ function Row(props) {
         <div className='flex gap-4'>
         <div className={"p-4 bg-black border-black border-3 rounded-2xl flex-1 w-10 grow-4 "}>
             <div className='font-mono flex-2 relative'>
-                <p className={"text-white edit-profile text-xs sm:text-sm"}> BPM per bar: <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 mb-2 text-black bg-white rounded-full h-8 w-20'></input><br></br>
-                BPM per beat: <input type="number" value={bpm*buttons1.length} onChange={handleBpm2} className='text-center h-8 p-2 text-black bg-white rounded-full w-20'></input></p>
+                <p className={"text-white edit-profile text-xs sm:text-sm"}> BPM (bars): <input type="number" value={bpm} onChange={handleBpm} className='text-center p-2 mb-2 text-black bg-white rounded-full h-8 w-20'></input><br></br>
+                BPM (beats): <input type="number" value={bpm*buttons1.length} onChange={handleBpm2} className='text-center h-8 p-2 text-black bg-white rounded-full w-20'></input></p>
                 <div></div>
                 
                 <input type="range" defaultValue={bpm} min="0" max="180" onChange={handleBpm} className='h-1 w-full'></input>
